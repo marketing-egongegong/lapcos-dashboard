@@ -409,9 +409,9 @@ with tab_sales:
         fig.add_bar(x=m_labels, y=m_spend, name="광고비", marker_color="rgba(251,191,36,.8)")
         fig.update_layout(
             title="월별 매출 vs 광고비", barmode="group",
-            paper_bgcolor="#1a1d27", plot_bgcolor="#1a1d27",
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
             font_color="#8b90a7", legend=dict(font=dict(color="#8b90a7")),
-            margin=dict(l=10, r=10, t=40, b=10), height=280,
+            margin=dict(l=10, r=10, t=30, b=10), height=200,
             yaxis=dict(tickformat="$,.0f", gridcolor="#2e3347"),
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -426,9 +426,9 @@ with tab_sales:
         fig2 = go.Figure(go.Pie(labels=labels, values=vals, hole=0.5,
             marker_colors=["#6c7fff","#34d399","#fbbf24","#f87171","#a78bfa","#60a5fa","#fb923c","#4ade80","#e879f9"]))
         fig2.update_layout(
-            title="SKU별 매출 비중", paper_bgcolor="#1a1d27",
+            title="SKU별 매출 비중", paper_bgcolor="rgba(0,0,0,0)",
             font_color="#8b90a7", legend=dict(font=dict(size=9, color="#8b90a7")),
-            margin=dict(l=10, r=10, t=40, b=10), height=280,
+            margin=dict(l=10, r=10, t=30, b=10), height=200,
         )
         st.plotly_chart(fig2, use_container_width=True)
 
@@ -500,8 +500,8 @@ with tab_sess:
             fig3.add_bar(x=s_labels, y=s_list, name="세션 수", marker_color="rgba(96,165,250,.8)", yaxis="y")
             fig3.add_scatter(x=s_labels, y=sp_list, name="광고비", line_color="#fbbf24", yaxis="y2")
             fig3.update_layout(
-                title="월별 세션 vs 광고비", paper_bgcolor="#1a1d27", plot_bgcolor="#1a1d27",
-                font_color="#8b90a7", height=280, margin=dict(l=10,r=10,t=40,b=10),
+                title="월별 세션 vs 광고비", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                font_color="#8b90a7", height=200, margin=dict(l=10,r=10,t=40,b=10),
                 yaxis=dict(gridcolor="#2e3347"),
                 yaxis2=dict(overlaying="y", side="right", tickformat="$,.0f"),
                 legend=dict(font=dict(color="#8b90a7")),
@@ -515,8 +515,8 @@ with tab_sess:
             fig4.add_scatter(x=s_labels, y=cvr_list, name="CVR(%)", line_color="#6c7fff", yaxis="y")
             fig4.add_scatter(x=s_labels, y=rps_list, name="RPS($)", line_color="#34d399", yaxis="y2")
             fig4.update_layout(
-                title="CVR & 세션당 매출", paper_bgcolor="#1a1d27", plot_bgcolor="#1a1d27",
-                font_color="#8b90a7", height=280, margin=dict(l=10,r=10,t=40,b=10),
+                title="CVR & 세션당 매출", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                font_color="#8b90a7", height=200, margin=dict(l=10,r=10,t=40,b=10),
                 yaxis=dict(gridcolor="#2e3347", ticksuffix="%"),
                 yaxis2=dict(overlaying="y", side="right", tickprefix="$"),
                 legend=dict(font=dict(color="#8b90a7")),
