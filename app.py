@@ -119,8 +119,27 @@ def parse_sb(txt):
     return result
 
 def parse_sessions(txt):
-    """col[1]=Date/TotalSessions 헤더 wide 포맷"""
+    """두 가지 포맷 지원:
+    1. Long: col[1]=날짜, col[2]=TotalSessions (session_2 형식)
+    2. Wide: col[1]="Date"/"TotalSessions" 헤더 행 (session 형식)
+    """
     rows = read_csv(txt).values.tolist()
+    result = {}
+
+    # Long 포맷 시도: col[1]=날짜, col[2]=세션수
+    for row in rows:
+        d = str(row[1]).strip() if len(row) > 1 else ""
+        if len(d) == 10 and d.startswith("2026") and d <= TODAY:
+            try:
+                v = float(str(row[2]).strip())
+                if v > 0:
+                    result[d[:7]] = result.get(d[:7], 0) + v
+            except (ValueError, IndexError, TypeError):
+                pass
+    if result:
+        return result
+
+    # Wide 포맷 시도: col[1]="Date"/"TotalSessions" 헤더
     d_row, s_row = None, None
     for row in rows:
         c1 = str(row[1]).strip() if len(row) > 1 else ""
@@ -135,7 +154,6 @@ def parse_sessions(txt):
     fi = next((i for i, c in enumerate(d_row) if len(str(c)) == 10 and str(c).startswith("2026")), -1)
     if fi < 0:
         return {}
-    result = {}
     for i in range(fi, min(len(d_row), len(s_row))):
         d = str(d_row[i]).strip()
         if len(d) != 10 or d > TODAY:
@@ -469,20 +487,6 @@ with tab_sess:
             except Exception as e:
                 sess_err = str(e)
 
-    with st.expander("🔍 세션 디버그"):
-        for sname in ["session_2", "session"]:
-            try:
-                txt = fetch(sname)
-                rows = read_csv(txt).values.tolist()
-                st.write(f"**{sname}** → {len(rows)}행")
-                st.write("Row0:", rows[0][:6] if rows else "없음")
-                st.write("Row1:", rows[1][:6] if len(rows)>1 else "없음")
-                st.write("Row2:", rows[2][:6] if len(rows)>2 else "없음")
-                parsed = parse_sessions(txt)
-                st.write("파싱결과:", parsed)
-            except Exception as e:
-                st.write(f"**{sname}** 실패:", str(e))
-
     if not sess_data:
         st.warning("세션 데이터를 찾을 수 없어요. 구글 시트에 `session` 탭이 있는지 확인해주세요.")
     else:
@@ -556,4 +560,17 @@ with tab_sess:
             st.markdown("- **TikTok Shop** 트래픽 → Amazon 연결 시 세션 및 A10 랭킹 상승")
             st.markdown("- 세션당 매출 향상: **번들 상품**으로 AOV 높이기")
 
-    
+        # 상세 테이블
+        st.markdown("**월별 세션 & 전환 상세**")
+        sess_df = pd.DataFrame([{
+            "월": s_labels[i],
+            "세션": f"{s_list[i]:,.0f}",
+            "판매량": f"{u_list[i]:,.0f}",
+            "CVR": f"{(u_list[i]/s_list[i]*100 if s_list[i] else 0):.2f}%",
+            "매출": f"${r_list[i]:,.0f}",
+            "광고비": f"${sp_list[i]:,.0f}",
+            "RPS": f"${(r_list[i]/s_list[i] if s_list[i] else 0):.2f}",
+        } for i in range(len(sess_months))])
+        st.dataframe(sess_df, use_container_width=True, hide_index=True)
+
+st.caption(f"🌿 LAPCOS 브랜드 대시보드 | 마지막 업데이트: {date.today().strftime('%Y.%m.%d')}")
