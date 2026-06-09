@@ -458,11 +458,16 @@ with tab_sales:
 with tab_sess:
     with st.spinner("세션 데이터 로드 중..."):
         sess_data = {}
-        try:
-            sess_txt = fetch("session")
-            sess_data = parse_sessions(sess_txt)
-        except Exception:
-            pass
+        sess_err = ""
+        for sname in ["session_2", "session", "Session", "SESSIONS", "sessions"]:
+            try:
+                sess_txt = fetch(sname)
+                parsed = parse_sessions(sess_txt)
+                if parsed:
+                    sess_data = parsed
+                    break
+            except Exception as e:
+                sess_err = str(e)
 
     if not sess_data:
         st.warning("세션 데이터를 찾을 수 없어요. 구글 시트에 `session` 탭이 있는지 확인해주세요.")
