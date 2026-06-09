@@ -469,6 +469,20 @@ with tab_sess:
             except Exception as e:
                 sess_err = str(e)
 
+    with st.expander("🔍 세션 디버그"):
+        for sname in ["session_2", "session"]:
+            try:
+                txt = fetch(sname)
+                rows = read_csv(txt).values.tolist()
+                st.write(f"**{sname}** → {len(rows)}행")
+                st.write("Row0:", rows[0][:6] if rows else "없음")
+                st.write("Row1:", rows[1][:6] if len(rows)>1 else "없음")
+                st.write("Row2:", rows[2][:6] if len(rows)>2 else "없음")
+                parsed = parse_sessions(txt)
+                st.write("파싱결과:", parsed)
+            except Exception as e:
+                st.write(f"**{sname}** 실패:", str(e))
+
     if not sess_data:
         st.warning("세션 데이터를 찾을 수 없어요. 구글 시트에 `session` 탭이 있는지 확인해주세요.")
     else:
@@ -542,17 +556,4 @@ with tab_sess:
             st.markdown("- **TikTok Shop** 트래픽 → Amazon 연결 시 세션 및 A10 랭킹 상승")
             st.markdown("- 세션당 매출 향상: **번들 상품**으로 AOV 높이기")
 
-        # 상세 테이블
-        st.markdown("**월별 세션 & 전환 상세**")
-        sess_df = pd.DataFrame([{
-            "월": s_labels[i],
-            "세션": f"{s_list[i]:,.0f}",
-            "판매량": f"{u_list[i]:,.0f}",
-            "CVR": f"{(u_list[i]/s_list[i]*100 if s_list[i] else 0):.2f}%",
-            "매출": f"${r_list[i]:,.0f}",
-            "광고비": f"${sp_list[i]:,.0f}",
-            "RPS": f"${(r_list[i]/s_list[i] if s_list[i] else 0):.2f}",
-        } for i in range(len(sess_months))])
-        st.dataframe(sess_df, use_container_width=True, hide_index=True)
-
-st.caption(f"🌿 LAPCOS 브랜드 대시보드 | 마지막 업데이트: {date.today().strftime('%Y.%m.%d')}")
+    
